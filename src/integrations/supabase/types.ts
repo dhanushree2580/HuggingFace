@@ -14,7 +14,310 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      datasets: {
+        Row: {
+          created_at: string
+          description: string | null
+          downloads: number | null
+          id: string
+          is_private: boolean | null
+          likes: number | null
+          name: string
+          owner_id: string
+          readme_content: string | null
+          tags: string[] | null
+          task: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          downloads?: number | null
+          id?: string
+          is_private?: boolean | null
+          likes?: number | null
+          name: string
+          owner_id: string
+          readme_content?: string | null
+          tags?: string[] | null
+          task?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          downloads?: number | null
+          id?: string
+          is_private?: boolean | null
+          likes?: number | null
+          name?: string
+          owner_id?: string
+          readme_content?: string | null
+          tags?: string[] | null
+          task?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      discussion_comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          discussion_id: string
+          id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          discussion_id: string
+          id?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          discussion_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discussion_comments_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "discussions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discussions: {
+        Row: {
+          author_id: string
+          body: string | null
+          created_at: string
+          id: string
+          resource_id: string
+          resource_type: string
+          title: string
+        }
+        Insert: {
+          author_id: string
+          body?: string | null
+          created_at?: string
+          id?: string
+          resource_id: string
+          resource_type: string
+          title: string
+        }
+        Update: {
+          author_id?: string
+          body?: string | null
+          created_at?: string
+          id?: string
+          resource_id?: string
+          resource_type?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      likes: {
+        Row: {
+          created_at: string
+          id: string
+          resource_id: string
+          resource_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          resource_id: string
+          resource_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          resource_id?: string
+          resource_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      models: {
+        Row: {
+          created_at: string
+          description: string | null
+          downloads: number | null
+          framework: string | null
+          id: string
+          is_private: boolean | null
+          likes: number | null
+          name: string
+          owner_id: string
+          readme_content: string | null
+          tags: string[] | null
+          task: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          downloads?: number | null
+          framework?: string | null
+          id?: string
+          is_private?: boolean | null
+          likes?: number | null
+          name: string
+          owner_id: string
+          readme_content?: string | null
+          tags?: string[] | null
+          task?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          downloads?: number | null
+          framework?: string | null
+          id?: string
+          is_private?: boolean | null
+          likes?: number | null
+          name?: string
+          owner_id?: string
+          readme_content?: string | null
+          tags?: string[] | null
+          task?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      org_members: {
+        Row: {
+          id: string
+          org_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          org_id: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          org_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_members_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+          username: string
+          website: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+          username: string
+          website?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          username?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      spaces: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_private: boolean | null
+          likes: number | null
+          name: string
+          owner_id: string
+          sdk_type: string | null
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_private?: boolean | null
+          likes?: number | null
+          name: string
+          owner_id: string
+          sdk_type?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_private?: boolean | null
+          likes?: number | null
+          name?: string
+          owner_id?: string
+          sdk_type?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
