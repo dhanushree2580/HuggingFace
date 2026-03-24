@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, LogOut, User } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const HFLogo = () => (
   <svg className="h-7 w-7" viewBox="0 0 95 88" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -15,7 +16,9 @@ export default function HFHeader() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { user, profile, signOut, loading } = useAuth();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +26,12 @@ export default function HFHeader() {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchOpen(false);
     }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    setUserMenuOpen(false);
+    navigate("/");
   };
 
   const navLinks = [
@@ -36,37 +45,23 @@ export default function HFHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card">
       <div className="hf-container flex h-14 items-center justify-between gap-4">
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2 shrink-0 text-foreground hover:text-primary transition-colors">
           <HFLogo />
           <span className="font-semibold text-lg hidden sm:block">Hugging Face</span>
         </Link>
 
-        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              to={link.href}
-              className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary"
-            >
+            <Link key={link.href} to={link.href} className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary">
               {link.label}
             </Link>
           ))}
         </nav>
 
-        {/* Search + Auth */}
         <div className="flex items-center gap-2">
           {searchOpen ? (
             <form onSubmit={handleSearch} className="flex items-center gap-2">
-              <input
-                autoFocus
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search models, datasets, users..."
-                className="w-48 sm:w-64 px-3 py-1.5 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-              />
+              <input autoFocus type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search models, datasets, users..." className="w-48 sm:w-64 px-3 py-1.5 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring" />
               <button type="button" onClick={() => setSearchOpen(false)} className="text-muted-foreground hover:text-foreground">
                 <X className="h-4 w-4" />
               </button>
@@ -77,46 +72,67 @@ export default function HFHeader() {
             </button>
           )}
 
-          <div className="hidden sm:flex items-center gap-2">
-            <Link to="/login" className="px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Log In
-            </Link>
-            <Link to="/signup" className="hf-btn-primary text-sm py-1.5">
-              Sign Up
-            </Link>
-          </div>
+          {!loading && (
+            <div className="hidden sm:flex items-center gap-2">
+              {user ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground hover:bg-secondary rounded-lg transition-colors"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold">
+                      {(profile?.username || user.email || "U")[0].toUpperCase()}
+                    </div>
+                    <span className="hidden lg:block">{profile?.username || user.email?.split("@")[0]}</span>
+                  </button>
+                  {userMenuOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-card border border-border rounded-lg shadow-lg z-50 py-1">
+                        <Link to="/profile" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-secondary transition-colors">
+                          <User className="h-4 w-4" /> Profile
+                        </Link>
+                        <button onClick={handleSignOut} className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-secondary transition-colors w-full text-left">
+                          <LogOut className="h-4 w-4" /> Sign Out
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <Link to="/login" className="px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Log In</Link>
+                  <Link to="/signup" className="hf-btn-primary text-sm py-1.5">Sign Up</Link>
+                </>
+              )}
+            </div>
+          )}
 
-          {/* Mobile menu toggle */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-muted-foreground hover:text-foreground"
-          >
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 text-muted-foreground hover:text-foreground">
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-card px-4 pb-4">
           <nav className="flex flex-col gap-1 pt-2">
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-md hover:bg-secondary"
-              >
+              <Link key={link.href} to={link.href} onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-md hover:bg-secondary">
                 {link.label}
               </Link>
             ))}
             <div className="flex gap-2 pt-2 border-t border-border mt-2">
-              <Link to="/login" className="flex-1 text-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-lg">
-                Log In
-              </Link>
-              <Link to="/signup" className="flex-1 text-center hf-btn-primary text-sm py-2">
-                Sign Up
-              </Link>
+              {user ? (
+                <button onClick={handleSignOut} className="flex-1 text-center px-3 py-2 text-sm font-medium text-foreground border border-border rounded-lg hover:bg-secondary">
+                  Sign Out
+                </button>
+              ) : (
+                <>
+                  <Link to="/login" className="flex-1 text-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-lg">Log In</Link>
+                  <Link to="/signup" className="flex-1 text-center hf-btn-primary text-sm py-2">Sign Up</Link>
+                </>
+              )}
             </div>
           </nav>
         </div>
